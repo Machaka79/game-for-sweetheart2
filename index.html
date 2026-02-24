@@ -1,73 +1,76 @@
-!DOCTYPE html
-html lang=th
-head
-    meta charset=UTF-8
-    meta name=viewport content=width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no
-    titleMemory Love Gametitle
-    style
-        body { background-color #fff0f3; font-family 'Arial', sans-serif; text-align center; margin 0; padding 20px; }
-        .grid { display grid; grid-template-columns repeat(3, 1fr); gap 10px; max-width 400px; margin 20px auto; }
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Memory Love Game</title>
+    <style>
+        body { background-color: #fff0f3; font-family: 'Arial', sans-serif; text-align: center; margin: 0; padding: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 350px; margin: 15px auto; }
         .card { 
-            aspect-ratio 11; position relative; transform-style preserve-3d; 
-            transition transform 0.6s; cursor pointer; 
+            aspect-ratio: 1/1; position: relative; transform-style: preserve-3d; 
+            transition: transform 0.5s; cursor: pointer; 
         }
-        .card.flipped { transform rotateY(180deg); }
+        .card.flipped { transform: rotateY(180deg); }
         .card-front, .card-back {
-            position absolute; width 100%; height 100%;
-            backface-visibility hidden; border-radius 10px; border 3px solid white;
-            box-shadow 0 4px 8px rgba(0,0,0,0.1);
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; border-radius: 8px; border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .card-front { transform rotateY(180deg); }
-        .card-front img, .card-back img { width 100%; height 100%; object-fit cover; border-radius 7px; }
+        .card-front { transform: rotateY(180deg); }
+        .card-front img, .card-back img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
         #win-msg { 
-            display none; position fixed; top 50%; left 50%; transform translate(-50%, -50%);
-            background white; padding 20px; border-radius 20px; width 85%; z-index 100;
-            box-shadow 0 10px 30px rgba(0,0,0,0.3);
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: white; padding: 20px; border-radius: 20px; width: 85%; z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        #win-msg img { width 100%; border-radius 15px; }
-    style
-head
-body
+        #win-msg img { width: 100%; border-radius: 15px; }
+    </style>
+</head>
+<body>
 
-    h2 style=color #ff4d6d;จับคู่รูปคู่ของเรา ❤️h2
-    div class=grid id=game-griddiv
+    <h3 style="color: #ff4d6d; margin-top: 10px;">จับคู่รูปคู่ของเรา ❤️</h3>
+    <div class="grid" id="game-grid"></div>
 
-    div id=win-msg
-        img src=win.jpg
-        h2 style=color #ff4d6d;เก่งจังเลย!h2
-        pจำรูปคู่ของเราได้หมดเลยนะ... brเค้ารักตัวที่สุดเลยจ้าาา ❤️p
-        button onclick=location.reload() style=padding 10px 20px; background #ff4d6d; color white; border none; border-radius 20px;เล่นอีกรอบbutton
-    div
+    <div id="win-msg">
+        <img src="win.jpg">
+        <h2 style="color: #ff4d6d;">เก่งจังเลยสิงห์!</h2>
+        <p>จำรูปเราได้แม่นแบบนี้ <br>เอาใจเค้าไปเลย 1,000% ❤️</p>
+        <button onclick="location.reload()" style="padding: 10px 20px; background: #ff4d6d; color: white; border: none; border-radius: 20px;">เล่นอีกรอบ</button>
+    </div>
 
-    script
+    <script>
+        // ใส่ชื่อไฟล์รูปที่สิงห์อัปโหลดลง GitHub ตรงนี้ (เช็คชื่อไฟล์ให้ตรงเป๊ะนะครับ)
         const images = ['img1.jpg', 'img2.jpg', 'img3.jpg', 'img4.jpg', 'img5.jpg', 'img6.jpg'];
-        const cardsData = [...images, ...images];  สร้างคู่
-        cardsData.sort(() = Math.random() - 0.5);  สุ่มตำแหน่ง
+        const cardsData = [...images, ...images];
+        cardsData.sort(() => Math.random() - 0.5);
 
         const grid = document.getElementById('game-grid');
         let flippedCards = [];
         let matchedCount = 0;
 
-        cardsData.forEach((imgSrc, index) = {
+        cardsData.forEach((imgSrc) => {
             const card = document.createElement('div');
             card.className = 'card';
             card.dataset.img = imgSrc;
             card.innerHTML = `
-                div class=card-backimg src=back.jpgdiv
-                div class=card-frontimg src=${imgSrc}div
+                <div class="card-back"><img src="back.jpg"></div>
+                <div class="card-front"><img src="${imgSrc}"></div>
             `;
+            // รองรับทั้งคลิกและทัชหน้าจอ
             card.addEventListener('click', flipCard);
+            card.addEventListener('touchstart', function(e) { 
+                e.preventDefault(); 
+                flipCard.call(this); 
+            }, {passive: false});
             grid.appendChild(card);
         });
 
         function flipCard() {
-            if (flippedCards.length  2 && !this.classList.contains('flipped')) {
+            if (flippedCards.length < 2 && !this.classList.contains('flipped')) {
                 this.classList.add('flipped');
                 flippedCards.push(this);
-
-                if (flippedCards.length === 2) {
-                    setTimeout(checkMatch, 700);
-                }
+                if (flippedCards.length === 2) setTimeout(checkMatch, 600);
             }
         }
 
@@ -75,15 +78,13 @@ body
             const [card1, card2] = flippedCards;
             if (card1.dataset.img === card2.dataset.img) {
                 matchedCount++;
-                if (matchedCount === images.length) {
-                    document.getElementById('win-msg').style.display = 'block';
-                }
+                if (matchedCount === images.length) document.getElementById('win-msg').style.display = 'block';
             } else {
                 card1.classList.remove('flipped');
                 card2.classList.remove('flipped');
             }
             flippedCards = [];
         }
-    script
-body
-html
+    </script>
+</body>
+</html>
